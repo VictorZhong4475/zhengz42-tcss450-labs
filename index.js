@@ -1,3 +1,6 @@
+const validation = require('./utilities').validation 
+let isStringProvided = validation.isStringProvided 
+
 //express is the framework we're going to use to handle requests
 const express = require('express')
 //Create a new instance of express
@@ -29,6 +32,42 @@ app.post("/hello", (reqeust, response) => {
     response.send({ 
         message: "Hello, you sent a POST request" 
     }) 
+}) 
+
+app.get("/params", (request, response) => { 
+    if (isStringProvided(request.query.name)) { 
+        response.send({ 
+            //req.query is a reference to arguments a 
+            message: "Hello, " + request.query.name + "! You sent a GET Request" 
+        }) 
+    } else { 
+        response.status(400) 
+        response.send({ 
+            message: "Missing required information" 
+        }) 
+    } 
+}) 
+ 
+app.post("/params", (request, response) => { 
+    if (isStringProvided(request.body.name)) { 
+        response.send({ 
+            //req.body is a reference to arguments in the POST body 
+            message: "Hello, " + request.body.name + "! You sent a POST Request" 
+        }) 
+    } else { 
+        response.status(400) 
+        response.send({ 
+            message: "Missing required information" 
+        }) 
+    } 
+}) 
+ 
+app.get("/wait", (request, response) => { 
+    setTimeout(() => { 
+        response.send({ 
+            message: "Thanks for waiting" 
+        }); 
+    }, 5000) 
 }) 
 
 
