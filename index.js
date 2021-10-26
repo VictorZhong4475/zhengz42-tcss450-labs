@@ -22,108 +22,119 @@ app.use(express.json())
  */
 app.use(middleware.jsonErrorInBody)
 
-app.get("/hello", (request, response) => { 
-    response.send({ 
-        message: "Hello, you sent a GET request" 
-    }) 
-}) 
+// app.get("/hello", (request, response) => { 
+//     response.send({ 
+//         message: "Hello, you sent a GET request" 
+//     }) 
+// }) 
  
-app.post("/hello", (reqeust, response) => { 
-    response.send({ 
-        message: "Hello, you sent a POST request" 
-    }) 
-}) 
+// app.post("/hello", (reqeust, response) => { 
+//     response.send({ 
+//         message: "Hello, you sent a POST request" 
+//     }) 
+// }) 
 
-app.get("/params", (request, response) => { 
-    if (isStringProvided(request.query.name)) { 
-        response.send({ 
-            //req.query is a reference to arguments a 
-            message: "Hello, " + request.query.name + "! You sent a GET Request" 
-        }) 
-    } else { 
-        response.status(400) 
-        response.send({ 
-            message: "Missing required information" 
-        }) 
-    } 
-}) 
- 
-app.post("/params", (request, response) => { 
-    if (isStringProvided(request.body.name)) { 
-        response.send({ 
-            //req.body is a reference to arguments in the POST body 
-            message: "Hello, " + request.body.name + "! You sent a POST Request" 
-        }) 
-    } else { 
-        response.status(400) 
-        response.send({ 
-            message: "Missing required information" 
-        }) 
-    } 
-}) 
+app.use('/hello', require('./routes/hello.js')) 
 
-app.post("/demosql", (request, response) => { 
-    if (isStringProvided(request.body.name) && isStringProvided(request.body.message)) { 
-        const theQuery = "INSERT INTO DEMO(Name, Message) VALUES ($1, $2) RETURNING *" 
-        const values = [request.body.name, request.body.message] 
+
+app.use('/params', require('./routes/params.js')) 
+
+app.use('/demosql', require('./routes/demosql.js'))
+
+app.use('/auth', require('./routes/register.js')) 
+
+// app.get("/params", (request, response) => { 
+//     if (isStringProvided(request.query.name)) { 
+//         response.send({ 
+//             //req.query is a reference to arguments a 
+//             message: "Hello, " + request.query.name + "! You sent a GET Request" 
+//         }) 
+//     } else { 
+//         response.status(400) 
+//         response.send({ 
+//             message: "Missing required information" 
+//         }) 
+//     } 
+// }) 
  
-        pool.query(theQuery, values) 
-            .then(result => { 
-                response.send({ 
-                    success: true, 
-                    message: "Inserted: " + result.rows[0].name 
-                }) 
-            }) 
-            .catch(err => { 
-                //log the error 
-                console.log(err) 
-                if (err.constraint == "demo_name_key") { 
-                    response.status(400).send({ 
-                        message: "Name exists" 
-                    }) 
-                } else { 
-                    response.status(400).send({ 
-                        message: err.detail 
-                    }) 
-                } 
-            })  
-    } else { 
-        response.status(400).send({ 
-            message: "Missing required information" 
-        }) 
-    } 
-}) 
+// app.post("/params", (request, response) => { 
+//     if (isStringProvided(request.body.name)) { 
+//         response.send({ 
+//             //req.body is a reference to arguments in the POST body 
+//             message: "Hello, " + request.body.name + "! You sent a POST Request" 
+//         }) 
+//     } else { 
+//         response.status(400) 
+//         response.send({ 
+//             message: "Missing required information" 
+//         }) 
+//     } 
+// }) 
+
+// app.post("/demosql", (request, response) => { 
+//     if (isStringProvided(request.body.name) && isStringProvided(request.body.message)) { 
+//         const theQuery = "INSERT INTO DEMO(Name, Message) VALUES ($1, $2) RETURNING *" 
+//         const values = [request.body.name, request.body.message] 
  
-app.get("/demosql", (request, response) => { 
+//         pool.query(theQuery, values) 
+//             .then(result => { 
+//                 response.send({ 
+//                     success: true, 
+//                     message: "Inserted: " + result.rows[0].name 
+//                 }) 
+//             }) 
+//             .catch(err => { 
+//                 //log the error 
+//                 console.log(err) 
+//                 if (err.constraint == "demo_name_key") { 
+//                     response.status(400).send({ 
+//                         message: "Name exists" 
+//                     }) 
+//                 } else { 
+//                     response.status(400).send({ 
+//                         message: err.detail 
+//                     }) 
+//                 } 
+//             })  
+//     } else { 
+//         response.status(400).send({ 
+//             message: "Missing required information" 
+//         }) 
+//     } 
+// }) 
  
-    const theQuery = 'SELECT name, message FROM Demo WHERE name LIKE $1' 
-    let values = [request.params.name] 
+// app.get("/demosql", (request, response) => { 
  
-    //No name was sent so SELECT on all 
-    if(!isStringProvided(request.params.name)) { 
-        values = ["%"] 
-    }  
-    pool.query(theQuery, values) 
-        .then(result => { 
-            if (result.rowCount > 0) { 
-                response.send({ 
-                    success: true, 
-                    names: result.rows 
-                }) 
-            } else { 
-                response.status(404).send({ 
-                    message: "Name not found" 
-                }) 
-            } 
-        }) 
-        .catch(err => { 
-            //log the error 
-            // console.log(err.details) 
-            response.status(400).send({ 
-                message: err.detail 
-            }) 
-        }) 
-}) 
+//     const theQuery = 'SELECT name, message FROM Demo WHERE name LIKE $1' 
+//     let values = [request.params.name] 
+ 
+//     //No name was sent so SELECT on all 
+//     if(!isStringProvided(request.params.name)) { 
+//         values = ["%"] 
+//     }  
+//     pool.query(theQuery, values) 
+//         .then(result => { 
+//             if (result.rowCount > 0) { 
+//                 response.send({ 
+//                     success: true, 
+//                     names: result.rows 
+//                 }) 
+//             } else { 
+//                 response.status(404).send({ 
+//                     message: "Name not found" 
+//                 }) 
+//             } 
+//         }) 
+//         .catch(err => { 
+//             //log the error 
+//             // console.log(err.details) 
+//             response.status(400).send({ 
+//                 message: err.detail 
+//             }) 
+//         }) 
+// }) 
+
+
  
 app.get("/wait", (request, response) => { 
     setTimeout(() => { 
