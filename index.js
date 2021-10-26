@@ -45,6 +45,7 @@ app.use('/auth', require('./routes/register.js'))
 
 app.use('/auth', require('./routes/signin.js')) 
 
+app.use('/phish', middleware.checkToken, require('./routes/phish.js')) 
 
 // app.get("/params", (request, response) => { 
 //     if (isStringProvided(request.query.name)) { 
