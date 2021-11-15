@@ -53,7 +53,7 @@ app.use('/chats', middleware.checkToken, require('./routes/chats.js'))
 
 app.use('/auth', middleware.checkToken, require('./routes/pushyregister.js'))
 
-app.use('/contact',middleware.checkToken,require('./routes/contact.js'))
+app.use('/contact',middleware.checkToken,require('./routes/contacts.js'))
 
 // app.get("/params", (request, response) => { 
 //     if (isStringProvided(request.query.name)) { 
